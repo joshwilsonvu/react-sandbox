@@ -1,0 +1,38 @@
+{
+  "name": "react-sandbox",
+  "version": "0.0.1",
+  "description": "",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "rm -rf ./lib/*; tsc",
+    "prepublishOnly": "npm run build; npm run test",
+    "test": "mocha "
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/chai-as-promised": "^7.1.0",
+    "@types/enzyme": "^3.1.15",
+    "@types/mocha": "^5.2.5",
+    "@types/react": "^16.7.20",
+    "@types/react-dom": "^16.0.11",
+    "@types/sinon": "^7.0.3",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "enzyme": "^3.8.0",
+    "jsdom": "^13.1.0",
+    "mocha": "^5.2.0",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "sinon": "^7.2.2",
+    "typescript": "^3.2.2"
+  },
+  "files": [
+    "lib",
+    "LICENSE",
+    "main.js"
+  ],
+  "types": "./lib/hello.d.ts",
+  "dependencies": {}
+}
