@@ -1,18 +1,16 @@
 {
-	"compilerOptions": {
-		"outDir": "./",
-		"target": "es5",
-		"module": "commonjs",
-		"noImplicitAny": true,
-		"removeComments": true,
-		"sourceMap": false,
-		"jsx": "react"
-	},
-	"include": [
-		"./*.tsx",
-		"./*.ts"
-	],
-	"exclude": [
-		"node_modules"
-	]
+  "compilerOptions": {
+    "outDir": "./",
+    "target": "es5",
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "sourceMap": false
+  },
+  "include": [
+    "./*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

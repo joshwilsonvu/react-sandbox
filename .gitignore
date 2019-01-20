@@ -43,3 +43,6 @@ jspm_packages
 
 # IDE-specific directory
 .idea
+
+# Mac-specific
+.DS_Store
