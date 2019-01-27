@@ -2,32 +2,30 @@
   "name": "browser-sandbox",
   "version": "0.0.1",
   "description": "A pleasant interface for securely running untrusted code in the browser.",
-  "main": "lib/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "rm -rf ./lib/*; tsc",
+    "build": "rm -f ./dist/*; tsc",
+    "watch": "tsc -w",
     "prepublishOnly": "npm run build; npm run test",
-    "test": "mocha "
+    "test": "mocha test"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/chai": "^4.1.7",
-    "@types/chai-as-promised": "^7.1.0",
     "@types/mocha": "^5.2.5",
-    "@types/react-dom": "^16.0.11",
+    "@types/node": "^10.12.18",
     "@types/sinon": "^7.0.3",
+    "async": "^2.6.1",
     "chai": "^4.2.0",
-    "chai-as-promised": "^7.1.1",
-    "jsdom": "^13.1.0",
+    "chai-events": "0.0.3",
+    "http-server": "^0.11.1",
+    "is-html": "^1.1.0",
     "mocha": "^5.2.0",
+    "puppeteer": "^1.11.0",
     "sinon": "^7.2.2",
     "typescript": "^3.2.2"
   },
-  "files": [
-    "lib",
-    "LICENSE",
-    "main.js"
-  ],
-  "types": "./lib/hello.d.ts",
   "dependencies": {}
 }

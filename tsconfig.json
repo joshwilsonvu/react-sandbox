@@ -1,15 +1,14 @@
 {
   "compilerOptions": {
-    "outDir": "./lib",
+    "outDir": "./dist",
     "target": "es5",
-    "module": "commonjs",
-    "noImplicitAny": true,
-    "strictNullChecks": true,
+    "module": "none",
+    "strict": true,
+    "noImplicitThis": false,
     "removeComments": true,
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "alwaysStrict": true,
     "lib": ["dom","es2016"]
   },
   "include": [
@@ -17,5 +16,7 @@
   ],
   "exclude": [
     "node_modules"
-  ]
+  ],
+  "types": ["node"],
+  "compileOnSave": true
 }
