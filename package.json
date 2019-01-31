@@ -3,20 +3,21 @@
   "version": "0.0.1",
   "description": "A pleasant interface for securely running untrusted code in the browser.",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "typings": "dist/index.d.ts",
   "scripts": {
     "build": "rm -f ./dist/*; tsc",
-    "watch": "tsc -w",
     "prepublishOnly": "npm run build; npm run test",
-    "test": "mocha test"
+    "test": "mocha \"test/**/*.test.ts\""
   },
-  "author": "",
+  "author": "joshwilsonvu",
   "license": "ISC",
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.5",
-    "@types/node": "^10.12.18",
-    "@types/sinon": "^7.0.3",
+    "@types/node": "^10.12.20",
+    "@types/puppeteer": "^1.11.2",
+    "@types/sinon": "^7.0.5",
+    "@types/sinon-chai": "^3.2.2",
     "async": "^2.6.1",
     "chai": "^4.2.0",
     "chai-events": "0.0.3",
@@ -24,8 +25,10 @@
     "is-html": "^1.1.0",
     "mocha": "^5.2.0",
     "puppeteer": "^1.11.0",
-    "sinon": "^7.2.2",
-    "typescript": "^3.2.2"
+    "sinon": "^7.2.3",
+    "sinon-chai": "^3.3.0",
+    "ts-node": "^8.0.2",
+    "typescript": "^3.2.4"
   },
   "dependencies": {}
 }

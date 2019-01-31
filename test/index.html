@@ -4,6 +4,10 @@
 </head>
 <body>
 <!--super basic page that simply includes dist code-->
-<script src="../dist/index.js"></script>
+<script src="../dist/index.js" type="module"></script>
+<script>
+  import BrowserSandbox from '../dist/index.js';
+  window.BrowserSandbox = BrowserSandbox;
+</script>
 </body>
 </html>
