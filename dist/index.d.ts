@@ -11,7 +11,7 @@ export default class BrowserSandbox {
      * An object containing all objects and functions to be exported to the sandboxed context.
      *
      * Functions included here will run in the current context.
-     * *DO NOT* export DOM elements, or the untrusted code will be able to manipulate the
+     * DO NOT export DOM elements, or the untrusted code will be able to manipulate the
      * current DOM.
      */
     exports: Assignable;
@@ -30,22 +30,28 @@ export default class BrowserSandbox {
      * 'allow-scripts' is automatically added and 'allow-same-origin' is automatically removed.
      */
     permissions: string[];
+    /**
+     * If true, exports can overwrite iframe global properties (i.e., console) and can be DOM nodes.
+     */
+    force: boolean;
     /** instance's iframe element on the page */
     private _iframe?;
     /**
      * Runs the given script in a new sandboxed context with the given exports, dependencies,
      * and permissions.
      *
-     * Calling #start() will remove the previously running sandbox if it exists.
+     * Calling #start() will replace the previous sandbox if it exists, reusing the original iframe.
      *
      * Exports will overwrite global properties of the sandboxed context.
      *
-     *
      * @param script the top-level JavaScript code to execute
      * @param iframe an optional existing HTMLIFrameElement (i.e. document.getElementById()) to run the sandbox in
-     * @return a Promise that resolves with data or rejects with an Error
+     * @return a Promise that resolves to data returned by the script or rejects with an error thrown by the script
      */
     start(script: string, iframe?: HTMLIFrameElement): Promise<any>;
+    /**
+     *
+     */
     stop(): void;
     build(script: string): string;
 }
