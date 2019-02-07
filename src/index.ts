@@ -50,7 +50,7 @@ export default class BrowserSandbox {
    * Because the iframe is reused, any global variables added will remain on a subsequent call to
    * #start(). If this is not desired, use #unmount() to remove the iframe before calling #start().
    *
-   * @param script the top-level JavaScript code to execute
+   * @param script the function-level JavaScript code to execute; return will end execution
    * @param iframe an optional existing HTMLIFrameElement (i.e. document.getElementById()) to run the sandbox in
    * @throws if the browser does not support the iframe sandbox attribute
    * @return a Promise that resolves to data returned by the script or rejects with an error thrown by the script
@@ -59,9 +59,9 @@ export default class BrowserSandbox {
     return new Promise((resolve, reject) => {
       this.stop();
       // init/create a new iframe if not exists, reuse iframe if possible
-      this._iframe = iframe || this._iframe || initIframe(document.createElement('iframe'), this.permissions);
-      if (typeof this._iframe.sandbox === 'undefined') {
-        this._iframe = undefined; // release reference
+      this._iframe = iframe || this._iframe || initIframe(document.createElement('iframe'));
+      if (!("sandbox" in this._iframe)) {
+        delete this._iframe; // release reference
         throw new Error('the iframe sandbox attribute is unsupported');
       }
       this._iframe.sandbox.add('allow-scripts', ...this.permissions);
@@ -120,7 +120,8 @@ export default class BrowserSandbox {
 
   /**
    *
-   * @param script
+   *
+   * @param script the function-level JavaScript code to execute; return will end execution
    */
   build(script: string) {
     script = sanitize(script);
@@ -149,7 +150,7 @@ const framework = (script: string) => `
 type Assignable = { [prop: string]: any };
 
 // Initializes an iframe DOM element
-const initIframe = (iframe: HTMLIFrameElement, permissions: string[]) => {
+const initIframe = (iframe: HTMLIFrameElement) => {
   iframe.height = '0';
   iframe.width = '0';
   iframe.style.border = 'none';

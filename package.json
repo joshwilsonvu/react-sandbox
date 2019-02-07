@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "scripts": {
-    "build": "rm -f ./dist/*; tsc",
+    "build": "tsc",
+    "watch": "tsc --watch",
     "prepublishOnly": "npm run build; npm run test",
     "test": "mocha \"test/**/*.test.js\""
   },

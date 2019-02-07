@@ -11,9 +11,12 @@ var BrowserSandbox = /** @class */ (function () {
         /**
          * An object containing all objects and functions to be exported to the sandboxed context.
          *
-         * Functions included here will run in the current context.
-         * DO NOT export DOM elements, or the untrusted code will be able to manipulate the
-         * current DOM.
+         * Exported names will overwrite global properties of the sandbox (console, alert)
+         * if they already exist.
+         *
+         * Functions included here can still capture and manipulate objects in the current context.
+         * DOM elements will be filtered so that the untrusted code will be not able to read or
+         * modify the current DOM.
          */
         this.exports = {};
         /**
@@ -31,30 +34,33 @@ var BrowserSandbox = /** @class */ (function () {
          * 'allow-scripts' is automatically added and 'allow-same-origin' is automatically removed.
          */
         this.permissions = [];
-        /**
-         * If true, exports can overwrite iframe global properties (i.e., console) and can be DOM nodes.
-         */
-        this.force = false;
     }
     /**
      * Runs the given script in a new sandboxed context with the given exports, dependencies,
      * and permissions.
      *
-     * Calling #start() will replace the previous sandbox if it exists, reusing the original iframe.
-     *
      * Exports will overwrite global properties of the sandboxed context.
      *
-     * @param script the top-level JavaScript code to execute
+     * Calling #start() will replace the previous sandbox if it exists, reusing the original iframe.
+     * Because the iframe is reused, any global variables added will remain on a subsequent call to
+     * #start(). If this is not desired, use #unmount() to remove the iframe before calling #start().
+     *
+     * @param script the function-level JavaScript code to execute; return will end execution
      * @param iframe an optional existing HTMLIFrameElement (i.e. document.getElementById()) to run the sandbox in
+     * @throws if the browser does not support the iframe sandbox attribute
      * @return a Promise that resolves to data returned by the script or rejects with an error thrown by the script
      */
     BrowserSandbox.prototype.start = function (script, iframe) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             var _a;
+            _this.stop();
             // init/create a new iframe if not exists, reuse iframe if possible
-            var oldIframe = _this._iframe;
             _this._iframe = iframe || _this._iframe || initIframe(document.createElement('iframe'));
+            if (!("sandbox" in _this._iframe)) {
+                delete _this._iframe; // release reference
+                throw new Error('the iframe sandbox attribute is unsupported');
+            }
             (_a = _this._iframe.sandbox).add.apply(_a, ['allow-scripts'].concat(_this.permissions));
             _this._iframe.sandbox.remove('allow-same-origin');
             // add the iframe's contents, a skeleton HTML doc with the script inserted as the onload callback
@@ -71,20 +77,13 @@ var BrowserSandbox = /** @class */ (function () {
             // add exports to sandbox global context
             for (var prop in _this.exports) {
                 if (_this.exports.hasOwnProperty(prop)) {
-                    if (!_this.force && _this.exports[prop] instanceof Node) {
-                        console.warn(prop + " in exports appears to be an HTML element. Untrusted code could use this to modify your DOM.");
-                    }
-                    else if (!_this.force && prop in _this._iframe.contentWindow) {
-                        console.info(prop + " will be overwritten in the iframe's window variable.");
+                    if (_this.exports[prop] instanceof Node) {
+                        console.warn(prop + " in exports appears to be an HTML element. Untrusted code could use this to modify your document.");
                     }
                     else {
                         _this._iframe.contentWindow[prop] = _this.exports[prop];
                     }
                 }
-            }
-            // remove the old iframe if it exists
-            if (oldIframe && oldIframe !== _this._iframe) {
-                oldIframe.parentNode.removeChild(oldIframe);
             }
             // add the iframe to the document only if it is a newly created one
             if (!document.body.contains(_this._iframe)) {
@@ -98,13 +97,24 @@ var BrowserSandbox = /** @class */ (function () {
         });
     };
     /**
-     *
+     * Unloads the currently active sandbox. Its base iframe will remain and can be reused.
      */
     BrowserSandbox.prototype.stop = function () {
+        this._iframe && (this._iframe.srcdoc = '');
+    };
+    /**
+     * Unloads the currently active sandbox and removes its base iframe.
+     */
+    BrowserSandbox.prototype.unmount = function () {
         if (this._iframe) {
             this._iframe.parentNode.removeChild(this._iframe);
         }
     };
+    /**
+     *
+     *
+     * @param script the function-level JavaScript code to execute; return will end execution
+     */
     BrowserSandbox.prototype.build = function (script) {
         script = sanitize(script);
         var deps = this.dependencies.map(function (d) { return "<script src=\"" + d + "\"></script>"; }).join('');
@@ -115,7 +125,7 @@ var BrowserSandbox = /** @class */ (function () {
 }());
 export default BrowserSandbox;
 // Script's return value (Promise or otherwise) will be converted into a Promise
-var framework = function (script) { return "\n<script>\n(function(){\n  var x;\n  try {\n    x = Promise.resolve((function() {\n      " + script + "\n    })());\n  } catch (e) {\n    x = Promise.reject(e);\n  }\n  window.parent.postMessage(x, '*');\n})()\n</script>"; };
+var framework = function (script) { return "\n<script>\n(function(){\n  var p;\n  try {\n    p = Promise.resolve((function() {\n      " + script + "\n    })());\n  } catch (e) {\n    p = Promise.reject(e);\n  }\n  window.parent.postMessage(p, '*');\n})()\n</script>"; };
 // Initializes an iframe DOM element
 var initIframe = function (iframe) {
     iframe.height = '0';
